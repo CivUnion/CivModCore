@@ -90,6 +90,21 @@ public class CMCWorldDAO {
 		}
 	}
 
+	boolean removeWorld(World world) {
+		try (Connection conn = db.getConnection();
+			 PreparedStatement delete = conn.prepareStatement("delete from cmc_worlds where uuid = ?");
+			 )
+		{
+			delete.setString(1, world.getUID().toString());
+			delete.execute();
+		} catch (SQLException e) {
+			logger.severe("Failed to delete world from db: " + e);
+			return false;
+		}
+
+		return true;
+	}
+
 	private void registerMigrations() {
 		db.registerMigration(1, false,
 				"create table if not exists cmc_worlds (id smallint unsigned not null auto_increment primary key, uuid char(36) not null, "
