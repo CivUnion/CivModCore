@@ -60,10 +60,7 @@ public class WorldIDManager {
 	}
 
 	public void unregisterWorld(final World world) {
-		if (!this.uuidToInternalID.containsKey(world.getUID())) {
-			return;
-		}
-		final short id = this.dao.getOrCreateWorldID(world);
+		final short id = this.uuidToInternalID.getOrDefault(world.getUID(), (short)-1);
 		if (id == -1) {
 			return;
 		}
