@@ -59,6 +59,19 @@ public class WorldIDManager {
 		return true;
 	}
 
+	public void unregisterWorld(final World world) {
+		final short id = this.uuidToInternalID.getOrDefault(world.getUID(), (short)-1);
+		if (id == -1) {
+			return;
+		}
+		if (!this.dao.removeWorld(world)) {
+			return;
+		}
+
+		this.uuidToInternalID.remove(world.getUID(), id);
+		this.internalIDToUuid.remove(id, world.getUID());
+	}
+
 	/**
 	 * Gets the world object mapped to an internal id.
 	 * 

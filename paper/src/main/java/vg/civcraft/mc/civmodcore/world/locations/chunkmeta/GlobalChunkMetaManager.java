@@ -16,6 +16,7 @@ import vg.civcraft.mc.civmodcore.world.locations.global.WorldIDManager;
 
 public class GlobalChunkMetaManager {
 	private final CMCWorldDAO chunkDao;
+	private final WorldIDManager idManager;
 	private final Map<UUID, WorldChunkMetaManager> worldToManager;
 	private final int chunkLoadingThreadCount;
 	private final Logger logger;
@@ -26,6 +27,7 @@ public class GlobalChunkMetaManager {
 
 	public GlobalChunkMetaManager(CMCWorldDAO chunkDao, WorldIDManager idManager, int chunkLoadingThreadCount) {
 		this.chunkDao = chunkDao;
+		this.idManager = idManager;
 		this.worldToManager = new TreeMap<>();
 		this.chunkLoadingThreadCount = chunkLoadingThreadCount;
 		this.logger = CivModCorePlugin.getInstance().getLogger();
@@ -125,7 +127,11 @@ public class GlobalChunkMetaManager {
 	void loadChunkData(Chunk chunk) {
 		WorldChunkMetaManager worldManager = worldToManager.get(chunk.getWorld().getUID());
 		if (worldManager == null) {
-			throw new IllegalStateException("No world manager for chunk at " + chunk.toString());
+			if (!idManager.registerWorld(chunk.getWorld())) {
+				CivModCorePlugin.getInstance().getLogger().severe("Failed to initialize world tracking: " + chunk.getWorld().getName());
+				return;
+			}
+			worldManager = worldToManager.get(chunk.getWorld().getUID());
 		}
 		worldManager.loadChunk(chunk.getX(), chunk.getZ());
 	}
@@ -133,7 +139,8 @@ public class GlobalChunkMetaManager {
 	void unloadChunkData(Chunk chunk) {
 		WorldChunkMetaManager worldManager = worldToManager.get(chunk.getWorld().getUID());
 		if (worldManager == null) {
-			throw new IllegalStateException("No world manager for chunk at " + chunk.toString());
+			CivModCorePlugin.getInstance().getLogger().severe("No world manager for world: " + chunk.getWorld().getName());
+			return;
 		}
 		worldManager.unloadChunk(chunk.getX(), chunk.getZ());
 	}
