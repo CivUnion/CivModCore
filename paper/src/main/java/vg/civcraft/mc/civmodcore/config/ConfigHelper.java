@@ -4,24 +4,33 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.minecraft.network.chat.ComponentUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -32,7 +41,9 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import vg.civcraft.mc.civmodcore.inventory.items.EnchantUtils;
 import vg.civcraft.mc.civmodcore.inventory.items.ItemMap;
+import vg.civcraft.mc.civmodcore.inventory.items.ItemUtils;
 import vg.civcraft.mc.civmodcore.inventory.items.MaterialUtils;
+import vg.civcraft.mc.civmodcore.inventory.items.MetaUtils;
 import vg.civcraft.mc.civmodcore.world.model.EllipseArea;
 import vg.civcraft.mc.civmodcore.world.model.GlobalYLimitedArea;
 import vg.civcraft.mc.civmodcore.world.model.IArea;
@@ -41,6 +52,8 @@ import vg.civcraft.mc.civmodcore.world.model.RectangleArea;
 @UtilityClass
 public final class ConfigHelper {
 
+
+	private static final MiniMessage MSG_PARSER = MiniMessage.miniMessage();
 	private static final Logger LOGGER = Bukkit.getLogger();
 
 	/**
@@ -158,21 +171,54 @@ public final class ConfigHelper {
 			}
 		}
 		ItemStack toAdd = new ItemStack(m);
-		if (current.isInt("durability")) {
-			LOGGER.warning("Item durability as specified at " + current.getCurrentPath() + " is no longer supported");
-		}
 		ItemMeta meta = toAdd.getItemMeta();
 		if (meta == null) {
 			LOGGER.severe("No item meta found for" + current.getCurrentPath());
 		} else {
 			String name = current.getString("name");
 			if (name != null) {
-				meta.setDisplayName(name);
+				meta.displayName(MSG_PARSER.deserialize(name));
 			}
+
+			if(current.isDouble("attack_damage")){
+				meta.removeAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE);
+				double attackDamage = current.getDouble("attack_damage");
+				meta.addAttributeModifier(
+					Attribute.GENERIC_ATTACK_DAMAGE,
+					new AttributeModifier("generic.attack_damage", attackDamage, AttributeModifier.Operation.ADD_NUMBER)
+				);
+			}
+
+			if(current.isDouble("attack_speed")){
+				meta.removeAttributeModifier(Attribute.GENERIC_ATTACK_SPEED);
+				double attackDamage = current.getDouble("attack_speed");
+				meta.addAttributeModifier(
+					Attribute.GENERIC_ATTACK_SPEED,
+					new AttributeModifier("generic.attack_speed", attackDamage, AttributeModifier.Operation.ADD_NUMBER)
+				);
+			}
+
+
+			if(meta instanceof Damageable){
+				Damageable damageable = (Damageable) meta;
+				int durability = current.getInt("durability", -1);
+				if(durability != -1) {
+					//Material.WOODEN_AXE.getMaxDurability()
+					//meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE)
+					damageable.setDamage(m.getMaxDurability()-durability);
+				}
+				toAdd.setItemMeta(damageable);
+				meta = toAdd.getItemMeta();
+			}
+
+			int customModelData = current.getInt("customModelData", -1);
+			if(customModelData != -1){
+				meta.setCustomModelData(customModelData);
+			}
+
 			List<String> lore = current.getStringList("lore");
-			if (lore != null) {
-				meta.setLore(lore);
-			}
+			MetaUtils.setComponentLore(meta, lore.stream().map(MSG_PARSER::deserialize).toList());
+
 			if (current.isBoolean("unbreakable")) {
 				meta.setUnbreakable(current.getBoolean("unbreakable"));
 			}

@@ -58,11 +58,11 @@ public final class Componentify {
 		component.append(Component.space());
 		component.append(Component.text(location.getBlockY())
 				.color(NamedTextColor.GREEN)
-				.hoverEvent(HoverEvent.showText(Component.text("Block X"))));
+				.hoverEvent(HoverEvent.showText(Component.text("Block Y"))));
 		component.append(Component.space());
 		component.append(Component.text(location.getBlockZ())
 				.color(NamedTextColor.BLUE)
-				.hoverEvent(HoverEvent.showText(Component.text("Block X"))));
+				.hoverEvent(HoverEvent.showText(Component.text("Block Z"))));
 		return component.build();
 	}
 

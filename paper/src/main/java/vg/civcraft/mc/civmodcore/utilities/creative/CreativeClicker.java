@@ -19,6 +19,7 @@ public class CreativeClicker extends Clickable {
 		this.key = key;
 		this.realItem = item.clone();
 		ItemUtils.addComponentLore(this.item,
+			Component.empty(),
 			Component.text(String.format("Namespace: %s", key.namespace())),
 			Component.text(String.format("Key: %s", key.value()))
 		);
@@ -26,7 +27,6 @@ public class CreativeClicker extends Clickable {
 
 	@Override
 	protected void clicked(@NotNull Player clicker) {
-
 	}
 
 	@Override
@@ -47,6 +47,7 @@ public class CreativeClicker extends Clickable {
 	@Override
 	protected void onMiddleClick(@NotNull Player clicker) {
 		super.onMiddleClick(clicker);
+		// TODO: Implement middle click to select number of items to give
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import lombok.experimental.UtilityClass;
@@ -210,18 +211,16 @@ public final class MetaUtils {
 	 *
 	 * @param meta The item meta to retrieve the lore from.
 	 * @return Returns the lore, which is never null.
-	 *
-	 * @deprecated Has been deprecated due to Paper's move to Kyori's Adventure.
-	 *             Use {@link #getComponentLore(ItemMeta)} instead.
 	 */
-	@Deprecated
 	@Nonnull
 	public static List<String> getLore(@Nonnull final ItemMeta meta) {
-		final List<String> lore = meta.getLore();
-		if (lore == null) {
+		final List<Component> lore = getComponentLore(meta);
+
+		if(CollectionUtils.isEmpty(lore)){
 			return new ArrayList<>(0);
 		}
-		return lore;
+
+		return lore.stream().map(ChatUtils::stringify).toList();
 	}
 
 	/**
@@ -229,11 +228,7 @@ public final class MetaUtils {
 	 *
 	 * @param meta The item meta to append the lore to.
 	 * @param lines The lore to append to the item meta.
-	 *
-	 * @deprecated Has been deprecated due to Paper's move to Kyori's Adventure.
-	 *             Use {@link #addComponentLore(ItemMeta, Component...)} instead.
 	 */
-	@Deprecated
 	public static void addLore(@Nonnull final ItemMeta meta,
 							   @Nullable final String... lines) {
 		addLore(meta, false, lines);
@@ -244,11 +239,7 @@ public final class MetaUtils {
 	 *
 	 * @param meta The item meta to append the lore to.
 	 * @param lines The lore to append to the item meta.
-	 *
-	 * @deprecated Has been deprecated due to Paper's move to Kyori's Adventure.
-	 *             Use {@link #addComponentLore(ItemMeta, List)} instead.
 	 */
-	@Deprecated
 	public static void addLore(@Nonnull final ItemMeta meta,
 							   @Nullable final List<String> lines) {
 		addLore(meta, false, lines);
@@ -260,11 +251,7 @@ public final class MetaUtils {
 	 * @param meta The item meta to append the lore to.
 	 * @param prepend If set to true, the lore will be prepended instead of appended.
 	 * @param lines The lore to append to the item meta.
-	 *
-	 * @deprecated Has been deprecated due to Paper's move to Kyori's Adventure.
-	 *             Use {@link #addComponentLore(ItemMeta, boolean, Component...)} instead.
 	 */
-	@Deprecated
 	public static void addLore(@Nonnull final ItemMeta meta,
 							   final boolean prepend,
 							   @Nullable final String... lines) {
@@ -277,30 +264,15 @@ public final class MetaUtils {
 	 * @param meta The item meta to append the lore to.
 	 * @param prepend If set to true, the lore will be prepended instead of appended.
 	 * @param lines The lore to append to the item meta.
-	 *
-	 * @deprecated Has been deprecated due to Paper's move to Kyori's Adventure.
-	 *             Use {@link #addComponentLore(ItemMeta, boolean, List)} instead.
 	 */
-	@Deprecated
 	public static void addLore(@Nonnull final ItemMeta meta,
 							   final boolean prepend,
 							   @Nullable List<String> lines) {
 		if (CollectionUtils.isEmpty(lines)) {
 			return;
 		}
-		lines = new ArrayList<>(lines);
-		lines.removeIf(Objects::isNull);
-		final List<String> lore = getLore(meta);
-		if (prepend) {
-			Collections.reverse(lines);
-			for (final String line : lines) {
-				lore.add(0, line);
-			}
-		}
-		else {
-			lore.addAll(lines);
-		}
-		meta.setLore(lore);
+
+		addComponentLore(meta, prepend, lines.stream().map(Component::text).collect(Collectors.toList()));
 	}
 
 }

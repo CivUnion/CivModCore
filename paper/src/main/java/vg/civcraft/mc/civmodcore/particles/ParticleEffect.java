@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 import lombok.NonNull;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.entity.Player;
 
 /**
  * @param particle The type of particle to effect, ie: explosion, heart, lava... etc
@@ -58,6 +59,17 @@ public record ParticleEffect(@NonNull Particle particle,
 	public void playEffect(@Nonnull final Location location) {
 		location.getWorld().spawnParticle(this.particle, location, this.particleCount,
 				this.offsetX, this.offsetY, this.offsetZ, this.speed, null);
+	}
+
+	/**
+	 * Display an effect defined in the config around a reinforcement.
+	 *
+	 * @param location the location of the particle.
+	 * @param player the player to display it to
+	 */
+	public void playEffect(@Nonnull final Location location, @Nonnull final Player player) {
+		player.spawnParticle(this.particle, location, this.particleCount,
+			this.offsetX, this.offsetY, this.offsetZ, this.speed, null);
 	}
 
 }

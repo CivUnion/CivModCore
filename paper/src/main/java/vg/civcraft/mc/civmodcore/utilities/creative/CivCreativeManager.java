@@ -16,6 +16,20 @@ public class CivCreativeManager {
 	private final CivModCorePlugin plugin;
 	protected final Map<NamespacedKey, ItemStack> customItems = new HashMap<>();
 
+	public static CivCreativeManager getInstance() {
+		return CivModCorePlugin.getInstance().getCreativeManager();
+	}
+
+	public static void register(NamespacedKey key, ItemStack item){
+		getInstance().registerItem(key, item);
+	}
+
+	public static void unregister(NamespacedKey key){
+		getInstance().unregisterItem(key);
+	}
+
+
+
 	public CivCreativeManager(CivModCorePlugin plugin){
 		this.plugin = plugin;
 	}
@@ -48,29 +62,24 @@ public class CivCreativeManager {
 	}
 
 	public void registerItem(NamespacedKey key, ItemStack item){
-		this.registerItem(key, item, false);
-	}
-
-	public void registerItem(NamespacedKey key, ItemStack item, boolean overwrite){
 		if(key == null){
 			this.plugin.getLogger().warning("Attempted to register item, 'key' was null");
 			return;
 		}
+
+		this.unregisterItem(key);
 
 		if(!ItemUtils.isValidItemIgnoringAmount(item)){
 			this.plugin.getLogger().warning("Attempted to register item, 'item' was invalid");
 			return;
 		}
 
-		if(customItems.containsKey(key) && !overwrite){
-			this.plugin.getLogger().warning(String.format("Attempted to register item with key '%s' but it already existed", key.asString()));
-			return;
-		}
-
 		ItemStack clonedItem = item.clone();
 		clonedItem.setAmount(1);
 
+
 		customItems.put(key, clonedItem);
+		this.plugin.getLogger().info(String.format("Registered item with key '%s'", key.asString()));
 	}
 
 	public void unregisterItem(NamespacedKey key){

@@ -5,11 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
+import net.minecraft.network.chat.ComponentUtils;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
@@ -463,15 +465,11 @@ public final class ItemUtils {
 	 *
 	 * @param item The item to retrieve the display name from.
 	 * @return Returns the display name of an item.
-	 *
-	 * @deprecated Has been deprecated due to Paper's move to Kyori's Adventure. Use
-	 *             {@link #getComponentDisplayName(ItemStack)} instead.
 	 */
 	@Nullable
-	@Deprecated
 	public static String getDisplayName(@Nullable final ItemStack item) {
 		final var meta = getItemMeta(item);
-		return meta == null ? null : meta.getDisplayName();
+		return meta == null ? null : ChatUtils.stringify(meta.displayName());
 	}
 
 	/**
@@ -481,16 +479,14 @@ public final class ItemUtils {
 	 * @param name The display name to set on the item.
 	 *
 	 * @throws IllegalArgumentException Throws when the given item has no meta.
-	 *
-	 * @deprecated Has been deprecated due to Paper's move to Kyori's Adventure. Use
-	 *             {@link #setComponentDisplayName(ItemStack, Component)} instead.
 	 */
-	@Deprecated
 	public static void setDisplayName(@Nonnull final ItemStack item,
 									  @Nullable final String name) {
 		final var meta = Objects.requireNonNull(getItemMeta(item),
 				"Cannot set that display name: item has no meta.");
-		meta.setDisplayName(name);
+
+		meta.displayName(Component.text(name));
+		//meta.setDisplayName(name);
 		item.setItemMeta(meta);
 	}
 
@@ -499,12 +495,8 @@ public final class ItemUtils {
 	 *
 	 * @param item The item to retrieve the lore from.
 	 * @return Returns the lore, which is never null.
-	 *
-	 * @deprecated Has been deprecated due to Paper's move to Kyori's Adventure. Use
-	 *             {@link #getComponentLore(ItemStack)} instead.
 	 */
 	@Nonnull
-	@Deprecated
 	public static List<String> getLore(@Nullable final ItemStack item) {
 		final var meta = getItemMeta(item);
 		return meta == null ? new ArrayList<>(0) : MetaUtils.getLore(meta);
@@ -519,11 +511,7 @@ public final class ItemUtils {
 	 * @see ItemUtils#clearLore(ItemStack)
 	 *
 	 * @throws IllegalArgumentException Throws when the given item has no meta.
-	 *
-	 * @deprecated Has been deprecated due to Paper's move to Kyori's Adventure. Use
-	 *             {@link #setComponentLore(ItemStack, Component...)} instead.
 	 */
-	@Deprecated
 	public static void setLore(@Nonnull final ItemStack item,
 							   @Nullable final String... lines) {
 		setLore(item, lines == null ? null : Arrays.asList(lines));
@@ -538,17 +526,10 @@ public final class ItemUtils {
 	 * @see ItemUtils#clearLore(ItemStack)
 	 *
 	 * @throws IllegalArgumentException Throws when the given item has no meta.
-	 *
-	 * @deprecated Has been deprecated due to Paper's move to Kyori's Adventure. Use
-	 *             {@link #setComponentLore(ItemStack, List)} instead.
 	 */
-	@Deprecated
 	public static void setLore(@Nonnull final ItemStack item,
-							   @Nullable final List<String> lines) {
-		final var meta = Objects.requireNonNull(getItemMeta(item),
-				"Cannot set that lore: item has no meta.");
-		meta.setLore(lines);
-		item.setItemMeta(meta);
+							   @Nonnull final List<String> lines) {
+		setComponentLore(item, lines.stream().map(Component::text).collect(Collectors.toList()));
 	}
 
 	/**
@@ -558,11 +539,7 @@ public final class ItemUtils {
 	 * @param lines The lore to append to the item.
 	 *
 	 * @throws IllegalArgumentException Throws when the given item has no meta.
-	 *
-	 * @deprecated Has been deprecated due to Paper's move to Kyori's Adventure. Use
-	 *             {@link #addComponentLore(ItemStack, Component...)} instead.
 	 */
-	@Deprecated
 	public static void addLore(@Nonnull final ItemStack item,
 							   @Nullable final String... lines) {
 		addLore(item, false, lines);
@@ -575,11 +552,7 @@ public final class ItemUtils {
 	 * @param lines The lore to append to the item.
 	 *
 	 * @throws IllegalArgumentException Throws when the given item has no meta.
-	 *
-	 * @deprecated Has been deprecated due to Paper's move to Kyori's Adventure. Use
-	 *             {@link #addComponentLore(ItemStack, List)} instead.
 	 */
-	@Deprecated
 	public static void addLore(@Nonnull final ItemStack item,
 							   @Nullable final List<String> lines) {
 		addLore(item, false, lines);
@@ -593,11 +566,7 @@ public final class ItemUtils {
 	 * @param lines The lore to append to the item.
 	 *
 	 * @throws IllegalArgumentException Throws when the given item has no meta.
-	 *
-	 * @deprecated Has been deprecated due to Paper's move to Kyori's Adventure. Use
-	 *             {@link #addComponentLore(ItemStack, boolean, Component...)} instead.
 	 */
-	@Deprecated
 	public static void addLore(@Nonnull final ItemStack item,
 							   final boolean prepend,
 							   @Nullable final String... lines) {
@@ -612,11 +581,7 @@ public final class ItemUtils {
 	 * @param lines The lore to append to the item.
 	 *
 	 * @throws IllegalArgumentException Throws when the given item has no meta.
-	 *
-	 * @deprecated Has been deprecated due to Paper's move to Kyori's Adventure. Use
-	 *             {@link #addComponentLore(ItemStack, boolean, List)} instead.
 	 */
-	@Deprecated
 	public static void addLore(@Nonnull final ItemStack item,
 							   final boolean prepend,
 							   @Nullable final List<String> lines) {
