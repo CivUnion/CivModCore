@@ -39,6 +39,7 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
+import vg.civcraft.mc.civmodcore.CivModCorePlugin;
 import vg.civcraft.mc.civmodcore.inventory.items.EnchantUtils;
 import vg.civcraft.mc.civmodcore.inventory.items.ItemMap;
 import vg.civcraft.mc.civmodcore.inventory.items.ItemUtils;
@@ -160,17 +161,35 @@ public final class ConfigHelper {
 			return im;
 		}
 		Material m = null;
-		try {
-			m = Material.valueOf(current.getString("material"));
-		} catch (IllegalArgumentException iae) {
-			m = null;
-		} finally {
-			if (m == null) {
-				LOGGER.severe("Failed to find material " + current.getString("material") + " in section " + current.getCurrentPath());
-				return im;
+		ItemStack toAdd = null;
+		{
+			String matString = current.getString("material");
+			try {
+				m = Material.valueOf(matString);
+			} catch (IllegalArgumentException iae) {
+				m = null;
+				if (matString != null){
+					NamespacedKey key = NamespacedKey.fromString(matString);
+					if(key != null){
+						ItemStack item = CivModCorePlugin.getInstance().getItemManager().getItem(key);
+						if(item != null){
+							toAdd = item;
+							m = item.getType();
+						}
+					}
+
+				}
+			} finally {
+				if (m == null) {
+					LOGGER.severe("Failed to find material " + matString + " in section " + current.getCurrentPath());
+					return im;
+				}
 			}
 		}
-		ItemStack toAdd = new ItemStack(m);
+		if(toAdd == null){
+			toAdd = new ItemStack(m);
+		}
+		//ItemStack toAdd = new ItemStack(m);
 		ItemMeta meta = toAdd.getItemMeta();
 		if (meta == null) {
 			LOGGER.severe("No item meta found for" + current.getCurrentPath());

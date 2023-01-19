@@ -46,6 +46,12 @@ public class ItemManager {
 			.collect(ImmutableList.toImmutableList());
 	}
 
+	public ItemStack getItem(NamespacedKey key){
+		ItemStack item = this.customItems.get(key);
+		plugin.getLogger().info(String.format("Grabbing item with key %s: %s | %s", key.asString(), item, customItems.size()));
+		return item == null ? null : item.clone();
+	}
+
 	public ImmutableList<Pair<NamespacedKey, ItemStack>> getItemsByPlugin(Plugin plugin){
 		if(plugin == null){
 			this.plugin.getLogger().warning("Attempted to get custom items of namespace, 'plugin' was null");
@@ -85,7 +91,7 @@ public class ItemManager {
 
 
 		customItems.put(key, clonedItem);
-		this.plugin.getLogger().info(String.format("Registered item with key '%s'", key.asString()));
+		this.plugin.getLogger().info(String.format("Registered item with key '%s': %s", key.asString(), clonedItem));
 	}
 
 	public void unregisterItem(NamespacedKey key){
