@@ -16,6 +16,7 @@ import vg.civcraft.mc.civmodcore.inventory.gui.components.Scrollbar;
 import vg.civcraft.mc.civmodcore.inventory.gui.components.SlotPredicates;
 import vg.civcraft.mc.civmodcore.inventory.gui.components.StaticDisplaySection;
 import vg.civcraft.mc.civmodcore.inventory.items.ItemUtils;
+import vg.civcraft.mc.civmodcore.utilities.ItemManager;
 import vg.civcraft.mc.civmodcore.utilities.MoreMath;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,14 +32,12 @@ public class CivCreativeMenu {
 		NAMESPACE,
 		NAME,
 		LORE
-
-
 	}
 
 	private final Player player;
-	private final CivCreativeManager creativeManager;
+	private final ItemManager creativeManager;
 
-	public CivCreativeMenu(Player player, CivCreativeManager creativeManager){
+	public CivCreativeMenu(Player player, ItemManager creativeManager){
 		this.player = Objects.requireNonNull(player);
 		this.creativeManager = Objects.requireNonNull(creativeManager);
 	}

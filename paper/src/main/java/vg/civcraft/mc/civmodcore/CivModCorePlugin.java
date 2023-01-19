@@ -1,13 +1,9 @@
 package vg.civcraft.mc.civmodcore;
 
 import java.sql.SQLException;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.inventory.ItemStack;
 import org.ipvp.canvas.MenuFunctionListener;
 import vg.civcraft.mc.civmodcore.chat.dialog.DialogManager;
 import vg.civcraft.mc.civmodcore.commands.CommandManager;
@@ -17,7 +13,6 @@ import vg.civcraft.mc.civmodcore.dao.ManagedDatasource;
 import vg.civcraft.mc.civmodcore.events.CustomEventMapper;
 import vg.civcraft.mc.civmodcore.inventory.gui.ClickableInventoryListener;
 import vg.civcraft.mc.civmodcore.inventory.items.EnchantUtils;
-import vg.civcraft.mc.civmodcore.inventory.items.ItemUtils;
 import vg.civcraft.mc.civmodcore.inventory.items.MoreTags;
 import vg.civcraft.mc.civmodcore.inventory.items.SpawnEggUtils;
 import vg.civcraft.mc.civmodcore.inventory.items.TreeTypeUtils;
@@ -29,7 +24,7 @@ import vg.civcraft.mc.civmodcore.players.settings.PlayerSettingAPI;
 import vg.civcraft.mc.civmodcore.players.settings.commands.ConfigCommand;
 import vg.civcraft.mc.civmodcore.utilities.SkinCache;
 import vg.civcraft.mc.civmodcore.utilities.creative.CivCreativeCommand;
-import vg.civcraft.mc.civmodcore.utilities.creative.CivCreativeManager;
+import vg.civcraft.mc.civmodcore.utilities.ItemManager;
 import vg.civcraft.mc.civmodcore.world.WorldTracker;
 import vg.civcraft.mc.civmodcore.world.locations.chunkmeta.GlobalChunkMetaManager;
 import vg.civcraft.mc.civmodcore.world.locations.chunkmeta.api.ChunkMetaAPI;
@@ -48,7 +43,7 @@ public final class CivModCorePlugin extends ACivMod {
 	private WorldIDManager worldIdManager;
 	private CommandManager commands;
 	private SkinCache skinCache;
-	private CivCreativeManager creativeManager;
+	private ItemManager itemManager;
 
 	@Override
 	public void onEnable() {
@@ -104,7 +99,7 @@ public final class CivModCorePlugin extends ACivMod {
 		BottomLineAPI.init();
 		MapColours.init();
 		this.skinCache = new SkinCache(this, this.config.getSkinCacheThreads());
-		this.creativeManager = new CivCreativeManager(this);
+		this.itemManager = new ItemManager(this);
 
 		if (this.config.getChunkLoadingStatistics())
 			LoadStatisticManager.enable();
@@ -168,8 +163,8 @@ public final class CivModCorePlugin extends ACivMod {
 		return this.skinCache;
 	}
 
-	public CivCreativeManager getCreativeManager(){
-		return this.creativeManager;
+	public ItemManager getItemManager(){
+		return this.itemManager;
 	}
 
 }

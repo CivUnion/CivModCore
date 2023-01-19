@@ -1,23 +1,27 @@
-package vg.civcraft.mc.civmodcore.utilities.creative;
+package vg.civcraft.mc.civmodcore.utilities;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import oshi.util.tuples.Pair;
 import vg.civcraft.mc.civmodcore.CivModCorePlugin;
 import vg.civcraft.mc.civmodcore.inventory.items.ItemUtils;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-public class CivCreativeManager {
+public class ItemManager {
 	private final CivModCorePlugin plugin;
 	protected final Map<NamespacedKey, ItemStack> customItems = new HashMap<>();
 
-	public static CivCreativeManager getInstance() {
-		return CivModCorePlugin.getInstance().getCreativeManager();
+	public static ItemManager getInstance() {
+		return CivModCorePlugin.getInstance().getItemManager();
 	}
 
 	public static void register(NamespacedKey key, ItemStack item){
@@ -28,10 +32,12 @@ public class CivCreativeManager {
 		getInstance().unregisterItem(key);
 	}
 
-
-
-	public CivCreativeManager(CivModCorePlugin plugin){
+	public ItemManager(CivModCorePlugin plugin){
 		this.plugin = plugin;
+		Set<Material> mats = Arrays.stream(Material.values()).filter(Material::isItem).collect(Collectors.toSet());
+		for(Material mat : mats){
+			this.registerItem(mat.getKey(), new ItemStack(mat));
+		}
 	}
 
 	public ImmutableList<Pair<NamespacedKey, ItemStack>> getItems(){
@@ -40,7 +46,7 @@ public class CivCreativeManager {
 			.collect(ImmutableList.toImmutableList());
 	}
 
-	public ImmutableList<Pair<NamespacedKey, ItemStack>> getItemsByNamespace(Plugin plugin){
+	public ImmutableList<Pair<NamespacedKey, ItemStack>> getItemsByPlugin(Plugin plugin){
 		if(plugin == null){
 			this.plugin.getLogger().warning("Attempted to get custom items of namespace, 'plugin' was null");
 			return ImmutableList.of();

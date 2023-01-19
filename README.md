@@ -6,6 +6,8 @@ CivModCore is derived from Humbug.
 
 ## Versions
 
+* 2.4.1 - Paper 1.18.2 - Removed CivGradle, and added Civ Creative Menu
+
 * 2.0.0 - Paper 1.18.1 - This version onwards requires gradle
 
 * 1.9.0 - Paper 1.17.1

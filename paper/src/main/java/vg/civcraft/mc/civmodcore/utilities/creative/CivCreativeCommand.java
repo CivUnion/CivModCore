@@ -20,7 +20,7 @@ public class CivCreativeCommand extends BaseCommand {
 	@CommandPermission("cmc.debug")
 	@Description("Opens the admin creative menu")
 	public void execute(Player player){
-		CivCreativeMenu menu = new CivCreativeMenu(player, plugin.getCreativeManager());
+		CivCreativeMenu menu = new CivCreativeMenu(player, plugin.getItemManager());
 		menu.showCreativeMenu(new HashSet<>());
 	}
 
